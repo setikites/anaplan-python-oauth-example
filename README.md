@@ -43,11 +43,17 @@ A link to the GitHub repository can be viewed [here](https://github.com/qkeddy/a
 
 ## Usage
 
-1. When executing the first time on a particular device, open the CLI in the project folder and run `python3 anaplan.py -r -c <<enter Client ID>>`.
+1. When executing the first time on a particular device, open the CLI in the project folder and run `python3 anaplan.py -r -c <<enter Client ID>>`. 
+
+![image](./anaplan-oauth-token-refresh-new-device-registration.gif)
 
 2. After the above step, the script can be executed unattended by simply executing `python3 anaplan.py`.
 
+![image](./anaplan-oauth-token-refresh-device-registered.gif)
+
 3. To see all command line arguments, start the script with `-h`.
+
+![image](./anaplan-oauth-help.gif)
 
 4. To update any of the Anaplan API URLs, please edit the file `settings.json`.
 
