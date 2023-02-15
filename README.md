@@ -1,5 +1,4 @@
 # Anaplan Python OAuth Example
-Anaplan administrative operations developed for Python
 
 ![badmath](https://img.shields.io/github/license/qkeddy/anaplan-python-oauth-example)
 ![badmath](https://img.shields.io/github/issues/qkeddy/anaplan-python-oauth-example)
@@ -39,7 +38,7 @@ A link to the GitHub repository can be viewed [here](https://github.com/qkeddy/a
 
 ## Features
 - Dynamically creates a new `access_token` using a `refresh_token` on an independent worker thread.
-- Secure storage of tokens
+- Secure storage of tokens.
 
 ## Usage
 
