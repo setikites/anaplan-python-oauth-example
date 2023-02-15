@@ -1,16 +1,16 @@
 # Anaplan Python Operations
 Anaplan administrative operations developed for Python
 
-![badmath](https://img.shields.io/github/license/qkeddy/anaplan-python-ops)
-![badmath](https://img.shields.io/github/issues/qkeddy/anaplan-python-ops)
-![badmath](https://img.shields.io/github/languages/top/qkeddy/anaplan-python-ops)
-![badmath](https://img.shields.io/github/watchers/qkeddy/anaplan-python-ops)
-![badmath](https://img.shields.io/github/forks/qkeddy/anaplan-python-ops)
+![badmath](https://img.shields.io/github/license/qkeddy/anaplan-python-oauth-example)
+![badmath](https://img.shields.io/github/issues/qkeddy/anaplan-python-oauth-example)
+![badmath](https://img.shields.io/github/languages/top/qkeddy/anaplan-python-oauth-example)
+![badmath](https://img.shields.io/github/watchers/qkeddy/anaplan-python-oauth-example)
+![badmath](https://img.shields.io/github/forks/qkeddy/anaplan-python-oauth-example)
 
 ## Description
 Demonstrates using the Anaplan REST API with OAuth with device-based authorization. The code highlights how to generate a `device_id`, `access_token`, and `refresh_token`. Additionally, the code highlights a multi-threaded approach to request a new `access_token` while performing other longer running operations such as a large data load. Please note that with this code example, the concept is simulated by calling ***Get Workspaces*** multiple times. 
 
-A link to the GitHub repository can be viewed [here](https://github.com/qkeddy/anaplan-python-ops).
+A link to the GitHub repository can be viewed [here](https://github.com/qkeddy/anaplan-python-oauth-example).
 
 ## Table of Contents
 
