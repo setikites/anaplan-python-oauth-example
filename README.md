@@ -8,7 +8,7 @@ Anaplan administrative operations developed for Python
 ![badmath](https://img.shields.io/github/forks/qkeddy/anaplan-python-oauth-example)
 
 ## Description
-Demonstrates using the Anaplan REST API with OAuth with device-based authorization. The code highlights how to generate a `device_id`, `access_token`, and `refresh_token`. Additionally, the code highlights a multi-threaded approach to request a new `access_token` while performing other longer running operations such as a large data load. Please note that with this code example, the concept is simulated by calling ***Get Workspaces*** multiple times. 
+Demonstrates using the Anaplan REST API with OAuth with device-based authorization. The code highlights how to generate a `device_id`, `access_token`, and `refresh_token`. Additionally, the code highlights a multi-threaded approach to request a new `access_token` while performing other longer running operations such as a large data load. Please note that with this code example, the concept is simulated by calling ***Get Workspaces*** five times every 10 seconds while simultaneously refreshing the `access_token` every 5 seconds. Please note that the `access_token` expires after 35 minutes, so please adjust the timer to a value just below this expiration length (2100 seconds). 
 
 A link to the GitHub repository can be viewed [here](https://github.com/qkeddy/anaplan-python-oauth-example).
 
