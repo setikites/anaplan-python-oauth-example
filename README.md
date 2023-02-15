@@ -1,4 +1,4 @@
-# Anaplan Python Operations
+# Anaplan Python OAuth Example
 Anaplan administrative operations developed for Python
 
 ![badmath](https://img.shields.io/github/license/qkeddy/anaplan-python-oauth-example)
