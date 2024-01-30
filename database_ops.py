@@ -10,7 +10,7 @@ import apsw.ext
 import jwt
 import os
 import logging
-import AuthToken
+import globals
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +26,9 @@ def read_db():
     tokens = {}
 
     # Check if SQLite database exists
-    if os.path.isfile("dbfile.db3"):
+    if os.path.isfile("token.db3"):
         # Create connection to the existing database
-        connection = apsw.Connection("dbfile.db3", flags=apsw.SQLITE_OPEN_READONLY)
+        connection = apsw.Connection("token.db3", flags=apsw.SQLITE_OPEN_READONLY)
 
         # Get values
         for val1, val2 in connection.execute("select val1, val2 from anaplan"):
@@ -45,17 +45,17 @@ def write_db():
     
     # Encode 
     encoded_token = jwt.encode(
-        {"val2": AuthToken.Auth.refresh_token}, AuthToken.Auth.client_id, algorithm="HS256")
-    values = (AuthToken.Auth.client_id, encoded_token)
+        {"val2": globals.Auth.refresh_token}, globals.Auth.client_id, algorithm="HS256")
+    values = (globals.Auth.client_id, encoded_token)
 
     # Check if SQLite database exists
-    if os.path.isfile("dbfile.db3"):
+    if os.path.isfile("token.db3"):
         # Create connection to the existing database
-        connection = apsw.Connection("dbfile.db3", flags=apsw.SQLITE_OPEN_READWRITE)
+        connection = apsw.Connection("token.db3", flags=apsw.SQLITE_OPEN_READWRITE)
         connection.execute("update anaplan set val1=$val1, val2=$val2", values)
     else:
         # Create a new database
-        connection = apsw.Connection("dbfile.db3")
+        connection = apsw.Connection("token.db3")
         connection.execute("create table if not exists anaplan (val1, val2)")
         connection.execute("insert into anaplan values($val1, $val2)", values)
     

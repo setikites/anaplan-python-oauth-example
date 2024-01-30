@@ -9,9 +9,9 @@ import sys
 import logging
 
 import utils
-import AnaplanOauth
-import AuthToken
-import GetWorkspaces
+import anaplan_oauth
+import globals
+import anaplan_ops
 
 # Clear the console
 utils.clear_console()
@@ -27,22 +27,22 @@ args = utils.read_cli_arguments()
 device_id_uri = settings['get_device_id_uri']
 tokens_uri = settings['get_tokens_uri']
 register = args.register
-AuthToken.Auth.client_id = args.client_id
+globals.Auth.client_id = args.client_id
 
 # If register flag is set, then request the user to authenticate with Anaplan to create device code
 if register:
-	logger.info('Registering the device with Client ID: %s' % AuthToken.Auth.client_id)
-	AnaplanOauth.get_device_id(device_id_uri)
-	AnaplanOauth.get_tokens(tokens_uri)
+	logger.info('Registering the device with Client ID: %s' % globals.Auth.client_id)
+	anaplan_oauth.get_device_id(device_id_uri)
+	anaplan_oauth.get_tokens(tokens_uri)
 	
 else:
 	print('Skipping device registration and refreshing the access_token')
 	logger.info('Skipping device registration and refreshing the access_token')
-	AnaplanOauth.refresh_tokens(tokens_uri, 0)
+	anaplan_oauth.refresh_tokens(tokens_uri, 0)
 
 # Configure multithreading 
-t1_refresh_token = AnaplanOauth.refresh_token_thread(1, name="Refresh Token", delay=5, uri=tokens_uri)
-t2_get_workspaces = GetWorkspaces.get_workspaces_thread(2, name="Get Workspaces", counter=3, delay=10)
+t1_refresh_token = anaplan_oauth.refresh_token_thread(1, name="Refresh Token", delay=5, uri=tokens_uri)
+t2_get_workspaces = anaplan_ops.get_workspaces_thread(2, name="Get Workspaces", counter=3, delay=10)
 
 # Start new Threads
 t1_refresh_token.start()

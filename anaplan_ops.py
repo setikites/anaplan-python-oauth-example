@@ -10,7 +10,7 @@ import logging
 import requests
 import time
 import threading
-import AuthToken
+import globals
 
 
 # ===  Configure Get Workspace threading  ===
@@ -42,7 +42,7 @@ def get_workspaces(threadName, counter, delay):
     get_headers = {
         'Content-Type': 'application/json',
         'Accept': '*/*',
-        'Authorization': 'Bearer ' + AuthToken.Auth.access_token
+        'Authorization': 'Bearer ' + globals.Auth.access_token
     }
 
     while counter:

@@ -11,8 +11,8 @@ import requests
 import json
 import time
 import threading
-import AuthToken
-import DbOps
+import globals
+import database_ops
 
 
 # Enable logger
@@ -29,7 +29,7 @@ def get_device_id(uri):
 
     # Set Body
     get_body = {
-        "client_id": AuthToken.Auth.client_id,
+        "client_id": globals.Auth.client_id,
         "scope": "openid profile email offline_access"
     }
 
@@ -41,7 +41,7 @@ def get_device_id(uri):
         j_res = json.loads(res.text)
 
         # Set values
-        AuthToken.Auth.device_code = j_res['device_code']
+        globals.Auth.device_code = j_res['device_code']
         logger.info("Device Code successfully received")
 
         # Pause for user authentication
@@ -64,8 +64,8 @@ def get_tokens(uri):
 
     # Set Body
     get_body = {
-        "client_id": AuthToken.Auth.client_id,
-        "device_code": AuthToken.Auth.device_code,
+        "client_id": globals.Auth.client_id,
+        "device_code": globals.Auth.device_code,
         "grant_type": "urn:ietf:params:oauth:grant-type:device_code"
     }
 
@@ -77,12 +77,12 @@ def get_tokens(uri):
         j_res = json.loads(res.text)
 
         # Set values in AuthToken Dataclass
-        AuthToken.Auth.access_token = j_res['access_token']
-        AuthToken.Auth.refresh_token = j_res['refresh_token']
+        globals.Auth.access_token = j_res['access_token']
+        globals.Auth.refresh_token = j_res['refresh_token']
         logger.info("Access Token and Refresh Token received")
 
         # Persist token values
-        DbOps.write_db()
+        database_ops.write_db()
 
     except:
         # Check status codes
@@ -93,8 +93,8 @@ def get_tokens(uri):
 # Response returns an updated `access_token` and `refresh_token`
 def refresh_tokens(uri, delay):
     # If the refresh_token is not available then read from `auth.json`
-    if AuthToken.Auth.refresh_token == "none":
-        tokens = DbOps.read_db()
+    if globals.Auth.refresh_token == "none":
+        tokens = database_ops.read_db()
 
         if tokens['val1'] == "empty":
             logger.warning("This client needs to be authorized by Anaplan. Please run this script again with the following arguments: python3 anaplan.py -r -c <<enter Client ID>>. For more information, use the argument `-h`.")
@@ -103,8 +103,8 @@ def refresh_tokens(uri, delay):
             # Exit with return code 1
             sys.exit(1)
 
-        AuthToken.Auth.client_id = tokens['val1']
-        AuthToken.Auth.refresh_token = tokens['val2']
+        globals.Auth.client_id = tokens['val1']
+        globals.Auth.refresh_token = tokens['val2']
 
     get_headers = {
         'Content-Type': 'application/json',
@@ -114,8 +114,8 @@ def refresh_tokens(uri, delay):
     # As this is a daemon thread, keep looping until main thread ends
     while True:
         get_body = {
-            "client_id": AuthToken.Auth.client_id,
-            "refresh_token": AuthToken.Auth.refresh_token,
+            "client_id": globals.Auth.client_id,
+            "refresh_token": globals.Auth.refresh_token,
             "grant_type": "refresh_token"
         }
         try:
@@ -128,12 +128,12 @@ def refresh_tokens(uri, delay):
             j_res = json.loads(res.text)
 
             # Set values in AuthToken Dataclass
-            AuthToken.Auth.access_token = j_res['access_token']
-            AuthToken.Auth.refresh_token = j_res['refresh_token']
+            globals.Auth.access_token = j_res['access_token']
+            globals.Auth.refresh_token = j_res['refresh_token']
             logger.info("Updated Access Token and Refresh Token received")
 
             # Persist token values
-            DbOps.write_db()
+            database_ops.write_db()
 
 
             # If delay is set than continue to refresh the token
@@ -175,8 +175,6 @@ class refresh_token_thread (threading.Thread):
 # === Process REST API endpoint exceptions ===
 # Log exceptions to logger
 def process_status_exceptions(res, uri):
-    # Override linting
-    # pyright: reportUnboundVariable=false
 
     if res.status_code == 401:
         logger.error('%s with URI: %s', json.loads(
