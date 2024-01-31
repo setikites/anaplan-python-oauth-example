@@ -112,13 +112,22 @@ def refresh_tokens(uri, database, delay, rotatable_token):
             res = anaplan_api(uri=uri, body=get_body)
 
             logger.info("Updated Access Token and Refresh Token received")
+            print("Updated Access Token and Refresh Token received")
 
             # Set new Access Token
             globals.Auth.access_token = res['access_token']
 
             # Set values in AuthToken Dataclass
             if rotatable_token:
-                globals.Auth.refresh_token = res['refresh_token']
+
+                # If the response does not contain a refresh_token key then handle the exception
+                try:
+                    globals.Auth.refresh_token = res['refresh_token']
+                except KeyError:
+                    logger.info("Check that `rotatableToken` is set properly in the `settings.json` file")
+                    print("Check that `rotatableToken` is set properly in the `settings.json` file")
+                    sys.exit(1)
+                
                 logger.info("Updated Access Token and Refresh Token received")
                 print("Updated Access Token and Refresh Token received")
 
