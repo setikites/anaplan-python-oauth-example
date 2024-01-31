@@ -1,6 +1,6 @@
 {
     "database": "token.db3",
-    "rotatableToken": true,
+    "rotatableToken": false,
     "uris": {
         "oauthService": "https://us1a.app.anaplan.com/oauth",
         "integrationApi": "https://api.anaplan.com/2/0"

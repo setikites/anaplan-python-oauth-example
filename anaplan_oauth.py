@@ -124,8 +124,8 @@ def refresh_tokens(uri, database, delay, rotatable_token):
                 try:
                     globals.Auth.refresh_token = res['refresh_token']
                 except KeyError:
-                    logger.info("Check that `rotatableToken` is set properly in the `settings.json` file")
-                    print("Check that `rotatableToken` is set properly in the `settings.json` file")
+                    logger.info("Check that `rotatableToken` is set properly in the `settings.json` file and corresponds to the Anaplan OAuth Client settings")
+                    print("Check that `rotatableToken` is set properly in the `settings.json` file and corresponds to the Anaplan OAuth Client settings")
                     sys.exit(1)
                 
                 logger.info("Updated Access Token and Refresh Token received")
@@ -196,9 +196,9 @@ def anaplan_api(uri, body={}):
 
     except requests.exceptions.HTTPError as err:
         print(
-            f'{err} in function "{sys._getframe().f_code.co_name}" with the following details: {err.response.text} - check that `rotatableToken` is set properly in the `settings.json` file')
+            f'{err} in function "{sys._getframe().f_code.co_name}" with the following details: {err.response.text} - check that `rotatableToken` is set properly in the `settings.json` file and corresponds to the Anaplan OAuth Client settings')
         logging.error(
-            f'{err} in function "{sys._getframe().f_code.co_name}" with the following details: {err.response.text} - check that `rotatableToken` is set properly in the `settings.json` file')
+            f'{err} in function "{sys._getframe().f_code.co_name}" with the following details: {err.response.text} - check that `rotatableToken` is set properly in the `settings.json` file and corresponds to the Anaplan OAuth Client settings')
         sys.exit(1)
     except requests.exceptions.RequestException as err:
         print(f'{err} in function "{sys._getframe().f_code.co_name}"')
