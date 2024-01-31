@@ -1,4 +1,8 @@
 {
-    "get_device_id_uri": "https://us1a.app.anaplan.com/oauth/device/code",
-    "get_tokens_uri": "https://us1a.app.anaplan.com/oauth/token"
+    "database": "token.db3",
+    "rotatableToken": true,
+    "uris": {
+        "oauthService": "https://us1a.app.anaplan.com/oauth",
+        "integrationApi": "https://api.anaplan.com/2/0"
+       }
 }
