@@ -148,7 +148,133 @@ def refresh_tokens(uri, database, delay, rotatable_token):
             logging.error(f'{err} in function "{sys._getframe().f_code.co_name}"')
             sys.exit(1)
 
+# ===  Step #1 - Authorization code grant   ===
+# Upon success, returns a Device ID and Verification URL
+def get_auth_code(uri):
+    # Set Query Parameters
+    get_params = {
+        'response_type': 'code',
+        'redirect_uri': 'https://www.anaplan.com',
+        'client_id': globals.Auth.client_id,
+        'scope': 'openid profile email offline_access'
+    }
+    try:
+        logger.info("Requesting Device ID and Verification URL")
+        res = requests.get(uri, params=get_params)
 
+        redirect = res.url
+
+        print ('Login using this link.  Then copy code and run again with --code "<code>" and --secret')
+        print (redirect)
+        sys.exit(0)
+        
+    except Exception as err:
+        print(f'{err} in function "{sys._getframe().f_code.co_name}"')
+        logging.error(f'{err} in function "{sys._getframe().f_code.co_name}"')
+        sys.exit(1)
+
+
+# ===  Step #2 - Authorization code grant   ===
+# Response returns a `access_token` and `refresh_token`
+def get_auth_tokens(uri, database):
+    # Set Headers
+    get_headers = {
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+    }
+
+    # Set Body
+    get_body = {
+        "client_id": globals.Auth.client_id,
+        "code": globals.Auth.authorization_code,
+        "client_secret": globals.Auth.secret,
+        'redirect_uri': 'https://www.anaplan.com',
+        'grant_type': 'authorization_code',
+    }
+
+    try:
+        logger.info("Requesting OAuth Access Token and Refresh Token")
+        res = requests.post(uri, headers=get_headers, json=get_body)
+        print (res.text)
+
+        # Convert payload to dictionary for parsing
+        j_res = json.loads(res.text)
+
+        # Set values in globals Dataclass
+        globals.Auth.access_token = j_res['access_token']
+        globals.Auth.refresh_token = j_res['refresh_token']
+        logger.info("Access Token and Refresh Token received")
+
+        # Persist token values
+        write_token_db(database)
+
+    except Exception as err:
+        print(f'{err} in function "{sys._getframe().f_code.co_name}"')
+        logging.error(f'{err} in function "{sys._getframe().f_code.co_name}"')
+        sys.exit(1)
+
+
+
+# ===  Step #3 - Authorization code grant  ===
+# Response returns an updated `access_token` and `refresh_token`
+def refresh_auth_tokens(uri, database, delay):
+    # If the refresh_token is not available then read from `auth.json`
+    if globals.Auth.refresh_token == "none":
+        tokens = read_token_db(database)
+
+        if tokens['client_id'] == "empty":
+            logger.warning("This client needs to be authorized by Anaplan. Please run this script again with the following arguments: python3 anaplan.py -r -c <<enter Client ID>>. For more information, use the argument `-h`.")
+            print("This client needs to be authorized by Anaplan. Please run this script again with the following arguments: python3 anaplan.py -r -c <<enter Client ID>>. For more information, use the argument `-h`.")
+
+            # Exit with return code 1
+            sys.exit(1)
+
+        globals.Auth.client_id = tokens['client_id']
+        globals.Auth.refresh_token = tokens['refresh_token']
+
+    get_headers = {
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+    }
+
+    # As this is a daemon thread, keep looping until main thread ends
+    while True:
+        get_body = {
+            "client_id": globals.Auth.client_id,
+            "client_secret": globals.Auth.secret, # required for authorization grant
+            "refresh_token": globals.Auth.refresh_token,
+            "grant_type": "refresh_token"
+        }
+
+        try:
+            logger.info(
+                "Requesting a new OAuth Access Token and Refresh Token")
+            print("Requesting a new OAuth Access Token and Refresh Token")
+            res = requests.post(uri, headers=get_headers, json=get_body)
+
+            # Convert payload to dictionary for parsing
+            j_res = json.loads(res.text)
+
+            # Set values in globals Dataclass
+            globals.Auth.access_token = j_res['access_token']
+            globals.Auth.refresh_token = j_res['refresh_token']
+            logger.info("Updated Access Token and Refresh Token received")
+
+            # Persist token values
+            write_token_db(database)
+
+            # If delay is set than continue to refresh the token
+            if delay > 0:
+                time.sleep(delay)
+            else:
+                break
+        except Exception as err:
+            print(f'{err} in function "{sys._getframe().f_code.co_name}"')
+            logging.error(f'{err} in function "{sys._getframe().f_code.co_name}"')
+            sys.exit(1)
+
+
+    
 # ===  Refresh token class  ===
 # Pass in values to be used with the refresh token function
 # Explicitly set the thread to be a subordinate daemon that will stop processing with main thread

@@ -49,13 +49,19 @@ def read_configuration_settings():
 
 
 # === Read CLI Arguments ===
-def read_cli_arguments():
+def read_cli_arguments(arg_list: list[str] | None = None):
     parser = argparse.ArgumentParser()
+    parser.add_argument('-a', '--auth_flow', action='store_true',
+                        help="Use Authorization Code Grant flow")
     parser.add_argument('-r', '--register', action='store_true',
                         help="OAuth device registration")
     parser.add_argument('-c', '--client_id', action='store',
                         type=str, help="OAuth Client ID")
     parser.add_argument('-t', '--token_ttl', action='store',
                         type=str, help="Token time to live value in seconds")
-    args = parser.parse_args()
+    parser.add_argument('--code', action='store',
+                        type=str, help='Authorization Code')
+    parser.add_argument('--secret', action='store',
+                        type=str, help='Client Secret')
+    args = parser.parse_args(arg_list)
     return args
